@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  terry-review-webhook:
+    build: .
+    container_name: terry-review-webhook
+    restart: unless-stopped
+    ports:
+      - "8020:8020"
+    environment:
+      - PORT=8020
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    volumes:
+      - .:/app
+      - /home/mark/.gitconfig:/root/.gitconfig:ro
+    networks:
+      - nginx-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8020/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  nginx-network:
+    external: true
